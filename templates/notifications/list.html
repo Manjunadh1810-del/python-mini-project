@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Notifications | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0"><i class="fa-solid fa-bell text-primary"></i> Notifications</h3>
+        {% if notifications %}
+            <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-outline-secondary btn-sm">Mark All as Read</a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+        {% for note in notifications %}
+        <div class="card shadow-sm border-0 p-3 mb-2 {% if not note.is_read %}border-start border-primary border-3{% endif %}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <p class="mb-1 {% if not note.is_read %}fw-bold{% endif %}">{{ note.message }}</p>
+                    <p class="text-muted small mb-0">{{ note.created_at|date:"d M Y, h:i A" }}</p>
+                </div>
+                {% if note.link_url %}
+                    <a href="{% url 'notifications:mark_read' note.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="card shadow-sm border-0 p-4 text-center">
+            <i class="fa-solid fa-bell-slash fa-3x text-secondary mb-3"></i>
+            <h5>No notifications yet</h5>
+            <p class="text-muted mb-0">You'll see updates here about your applications and interviews.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

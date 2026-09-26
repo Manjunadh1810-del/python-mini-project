@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}My Resume | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">My Resume</h3>
+        <div>
+            <a href="{% url 'resumes:resume_upload' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i> Replace</a>
+            <a href="#" class="btn btn-outline-danger btn-sm" data-confirm
+               data-confirm-title="Delete Resume"
+               data-confirm-message="Delete your resume ({{ resume.filename }})? You'll need to re-upload to use AI matching again."
+               data-confirm-href="{% url 'resumes:resume_delete' %}"
+               data-confirm-label="Delete Resume"><i class="fa-solid fa-trash"></i> Delete</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h6 class="fw-bold"><i class="fa-solid fa-file-lines text-primary"></i> {{ resume.filename }}</h6>
+                <p class="text-muted small mb-1">Type: {{ resume.file_type|upper }} &middot; Size: {{ resume.file_size_kb }} KB</p>
+                <p class="text-muted small mb-0">Uploaded: {{ resume.uploaded_at|date:"d M Y, h:i A" }}</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ resume.file.url }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                    <i class="fa-solid fa-download"></i> Download Original
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4">
+        <h6 class="fw-bold mb-3">Extraction Status</h6>
+        {% if resume.extraction_successful %}
+            <div class="alert alert-success small mb-3">
+                <i class="fa-solid fa-circle-check"></i> Text extracted successfully ({{ resume.extracted_text|length }} characters).
+            </div>
+            <a href="{% url 'resumes:resume_analysis' %}" class="btn btn-primary btn-sm mb-3"><i class="fa-solid fa-wand-magic-sparkles"></i> View AI Analysis Report</a>
+            <h6 class="fw-bold small text-muted">Extracted Text Preview</h6>
+            <pre class="small bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto; white-space: pre-wrap;">{{ resume.extracted_text|truncatechars:2000 }}</pre>
+        {% else %}
+            <div class="alert alert-warning small mb-0">
+                <i class="fa-solid fa-triangle-exclamation"></i> Text extraction failed: {{ resume.extraction_error }}
+                <br>Try re-uploading a text-based (not scanned-image) PDF or DOCX file.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

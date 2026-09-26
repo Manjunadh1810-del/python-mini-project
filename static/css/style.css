@@ -1,0 +1,51 @@
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand i {
+    color: #4f8ef7;
+}
+
+.card {
+    border-radius: 0.75rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.08) !important;
+}
+
+.btn-primary {
+    background-color: #2f5cf5;
+    border-color: #2f5cf5;
+}
+
+.btn-primary:hover {
+    background-color: #2448c9;
+    border-color: #2448c9;
+}
+
+/* Form validation polish - pairs with the is-invalid class added by main.js */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #dc3545;
+}
+
+/* Empty-state icon consistency across the app */
+.card i.fa-3x {
+    opacity: 0.6;
+}
+
+/* Slightly tighter spacing for stat cards on small screens */
+@media (max-width: 576px) {
+    .card.p-3 h4, .card.p-3 h5 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Keep table content readable on small screens without breaking layout */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+}

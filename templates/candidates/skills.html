@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Manage Skills | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h4 class="fw-bold mb-3">Add Skills</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.skills_input.label }}</label>
+                        {{ form.skills_input }}
+                        {% if form.skills_input.errors %}<div class="text-danger small">{{ form.skills_input.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.proficiency.label }}</label>
+                        {{ form.proficiency }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Skills</button>
+                </form>
+            </div>
+
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="fw-bold mb-3">Your Skills</h5>
+                {% for cs in candidate_skills %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <span>{{ cs.skill.name }} <span class="badge bg-light text-dark border">{{ cs.get_proficiency_display }}</span></span>
+                        <a href="#" class="text-danger small" data-confirm
+                           data-confirm-title="Remove Skill"
+                           data-confirm-message="Remove '{{ cs.skill.name }}' from your profile?"
+                           data-confirm-href="{% url 'candidates:skill_remove' cs.pk %}"
+                           data-confirm-label="Remove">Remove</a>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small">No skills added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

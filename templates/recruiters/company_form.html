@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ mode }} Company | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 p-4">
+                <h4 class="fw-bold mb-4">{{ mode }} Company Profile</h4>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Save Company</button>
+                    <a href="{% url 'recruiters:dashboard' %}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

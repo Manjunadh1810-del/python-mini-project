@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Resume Analysis | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+        <h3 class="fw-bold mb-0"><i class="fa-solid fa-wand-magic-sparkles text-primary"></i> Resume Analysis Report</h3>
+        <div>
+            <a href="{% url 'resumes:resume_reanalyze' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i> Re-analyze</a>
+        </div>
+    </div>
+    <p class="text-muted mb-4">{{ resume.filename }} &middot; Analyzed {{ resume.analyzed_at|date:"d M Y, h:i A" }}</p>
+
+    <div class="row g-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-star text-primary"></i> Skills Detected ({{ resume.extracted_skills|length }})</h6>
+                {% if resume.extracted_skills %}
+                    <div>
+                        {% for skill in resume.extracted_skills %}
+                            <span class="badge bg-primary me-1 mb-2 p-2">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    <p class="text-muted small mt-3 mb-0">
+                        Matched by scanning your resume text against a catalog of {{ resume.extracted_skills|length }} recognized skill keywords -
+                        each one above appears verbatim in your resume.
+                    </p>
+                {% else %}
+                    <p class="text-muted small mb-0">No recognizable skills found. Try listing skills explicitly in a "Skills" section of your resume.</p>
+                {% endif %}
+            </div>
+
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-graduation-cap text-primary"></i> Education Mentions</h6>
+                {% if resume.extracted_education_hints %}
+                    {% for hint in resume.extracted_education_hints %}
+                        <p class="small border-bottom pb-2 mb-2">{{ hint }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small mb-0">No degree keywords (B.Tech, MBA, M.Sc, etc.) detected in the resume text.</p>
+                {% endif %}
+            </div>
+
+            <div class="card shadow-sm border-0 p-4">
+                <h6 class="fw-bold mb-3"><i class="fa-solid fa-briefcase text-primary"></i> Experience Hint</h6>
+                {% if resume.experience_years_hint %}
+                    <p class="mb-0">Resume text mentions approximately <strong>{{ resume.experience_years_hint }} years</strong> of experience.</p>
+                {% else %}
+                    <p class="text-muted small mb-0">No explicit "X years of experience" phrase detected. Your structured Experience entries on your profile are used for matching instead.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4">
+                <h6 class="fw-bold mb-2">Sync to Profile</h6>
+                {% if new_skills %}
+                    <p class="text-muted small">{{ new_skills|length }} skill(s) found in your resume aren't on your profile yet:</p>
+                    <div class="mb-3">
+                        {% for skill in new_skills %}
+                            <span class="badge bg-light text-dark border me-1 mb-1">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    <form method="post" action="{% url 'resumes:add_extracted_skills' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Add These Skills to My Profile</button>
+                    </form>
+                {% else %}
+                    <p class="text-success small mb-0"><i class="fa-solid fa-circle-check"></i> All detected skills are already on your profile.</p>
+                {% endif %}
+                {% if already_added_count > 0 %}
+                    <p class="text-muted small mt-2 mb-0">{{ already_added_count }} detected skill(s) already on your profile.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'resumes:resume_view' %}" class="btn btn-outline-secondary mt-4">Back to Resume</a>
+</div>
+{% endblock %}

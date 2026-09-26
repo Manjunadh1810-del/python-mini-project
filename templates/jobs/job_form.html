@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block title %}{{ mode }} Job | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 p-4">
+                <h4 class="fw-bold mb-4">{{ mode }} Job</h4>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.title.label }}</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.responsibilities.label }}</label>
+                        {{ form.responsibilities }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">{{ form.job_type.label }}</label>
+                            {{ form.job_type }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">{{ form.work_mode.label }}</label>
+                            {{ form.work_mode }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">{{ form.location.label }}</label>
+                            {{ form.location }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.min_experience.label }}</label>
+                            {{ form.min_experience }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.max_experience.label }}</label>
+                            {{ form.max_experience }}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.min_salary.label }}</label>
+                            {{ form.min_salary }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.max_salary.label }}</label>
+                            {{ form.max_salary }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.required_skills_input.label }}</label>
+                        {{ form.required_skills_input }}
+                        {% if form.required_skills_input.errors %}<div class="text-danger small">{{ form.required_skills_input.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.preferred_skills_input.label }}</label>
+                        {{ form.preferred_skills_input }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.status.label }}</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.application_deadline.label }}</label>
+                            {{ form.application_deadline }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Job</button>
+                    <a href="{% url 'jobs:manage_jobs' %}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

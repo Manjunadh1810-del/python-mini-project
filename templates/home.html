@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Home | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<section class="bg-primary bg-gradient text-white py-5">
+    <div class="container text-center py-5">
+        <h1 class="display-5 fw-bold">Find the Right Match, Faster.</h1>
+        <p class="lead">AI-powered resume analysis and candidate-job matching for smarter hiring.</p>
+        <a href="{% url 'accounts:register_choice' %}" class="btn btn-light btn-lg mt-3">Get Started</a>
+    </div>
+</section>
+
+<section class="container py-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="fa-solid fa-file-lines fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Resume Analysis</h5>
+                    <p class="card-text text-muted">Automatic skill and experience extraction from resumes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="fa-solid fa-diagram-project fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Explainable Matching</h5>
+                    <p class="card-text text-muted">See exactly why a candidate matches a job.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="fa-solid fa-chart-line fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Skill Gap Insights</h5>
+                    <p class="card-text text-muted">Know what to learn to land your next role.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

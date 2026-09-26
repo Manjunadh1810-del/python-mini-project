@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}My Profile | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">My Profile</h3>
+        <a href="{% url 'candidates:profile_edit' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            {% if profile.profile_picture %}
+                <img src="{{ profile.profile_picture.url }}" class="rounded-circle" width="72" height="72" style="object-fit:cover;">
+            {% else %}
+                <i class="fa-solid fa-circle-user fa-4x text-secondary"></i>
+            {% endif %}
+            <div>
+                <h5 class="mb-0">{{ request.user.first_name }} {{ request.user.last_name }}</h5>
+                <p class="text-muted mb-0">{{ profile.headline|default:"No headline set" }}</p>
+                <p class="text-muted small mb-0">{{ profile.location|default:"Location not set" }}</p>
+            </div>
+        </div>
+        <p>{{ profile.bio|default:"No bio added yet." }}</p>
+        <div class="d-flex gap-3 small">
+            {% if profile.linkedin_url %}<a href="{{ profile.linkedin_url }}" target="_blank">LinkedIn</a>{% endif %}
+            {% if profile.github_url %}<a href="{{ profile.github_url }}" target="_blank">GitHub</a>{% endif %}
+            {% if profile.portfolio_url %}<a href="{{ profile.portfolio_url }}" target="_blank">Portfolio</a>{% endif %}
+        </div>
+        <div class="progress mt-3" style="height: 6px;">
+            <div class="progress-bar bg-success" style="width: {{ completion }}%;"></div>
+        </div>
+        <p class="small text-muted mt-1 mb-0">{{ completion }}% profile complete</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><i class="fa-solid fa-graduation-cap text-primary"></i> Education</h6>
+                    <a href="{% url 'candidates:education_add' %}" class="btn btn-sm btn-outline-primary">+ Add</a>
+                </div>
+                {% for edu in education_entries %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <strong>{{ edu.degree }}</strong> {% if edu.field_of_study %}in {{ edu.field_of_study }}{% endif %}<br>
+                        <span class="text-muted small">{{ edu.institution }} &middot; {{ edu.start_year }} - {{ edu.end_year|default:"Present" }}</span>
+                        <div class="mt-1">
+                            <a href="{% url 'candidates:education_edit' edu.pk %}" class="small">Edit</a> ·
+                            <a href="#" class="small text-danger" data-confirm
+                               data-confirm-title="Delete Education Entry"
+                               data-confirm-message="Delete '{{ edu.degree }} - {{ edu.institution }}'?"
+                               data-confirm-href="{% url 'candidates:education_delete' edu.pk %}"
+                               data-confirm-label="Delete">Delete</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small">No education added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0"><i class="fa-solid fa-briefcase text-primary"></i> Experience</h6>
+                    <a href="{% url 'candidates:experience_add' %}" class="btn btn-sm btn-outline-primary">+ Add</a>
+                </div>
+                {% for exp in experience_entries %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <strong>{{ exp.job_title }}</strong><br>
+                        <span class="text-muted small">{{ exp.company_name }} &middot; {{ exp.start_date }} - {% if exp.currently_working %}Present{% else %}{{ exp.end_date }}{% endif %}</span>
+                        <div class="mt-1">
+                            <a href="{% url 'candidates:experience_edit' exp.pk %}" class="small">Edit</a> ·
+                            <a href="#" class="small text-danger" data-confirm
+                               data-confirm-title="Delete Experience Entry"
+                               data-confirm-message="Delete '{{ exp.job_title }} at {{ exp.company_name }}'?"
+                               data-confirm-href="{% url 'candidates:experience_delete' exp.pk %}"
+                               data-confirm-label="Delete">Delete</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small">No experience added yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4 mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0"><i class="fa-solid fa-star text-primary"></i> Skills</h6>
+            <a href="{% url 'candidates:skills_manage' %}" class="btn btn-sm btn-outline-primary">Manage Skills</a>
+        </div>
+        <div>
+            {% for cs in candidate_skills %}
+                <span class="badge bg-light text-dark border me-2 mb-2 p-2">{{ cs.skill.name }} <span class="text-muted">({{ cs.get_proficiency_display }})</span></span>
+            {% empty %}
+                <p class="text-muted small">No skills added yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

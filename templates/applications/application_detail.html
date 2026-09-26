@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Application - {{ application.job.title }} | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-1">{{ application.job.title }}</h3>
+    <p class="text-muted mb-4">{{ application.job.company.name }} &middot; Applied on {{ application.applied_at|date:"d M Y" }}</p>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-bold mb-3">Application Status</h6>
+
+        {% if application.status == 'rejected' %}
+            <span class="badge bg-danger p-2">Rejected</span>
+            <p class="text-muted small mt-2 mb-0">This application was not selected to move forward. Keep applying — check your Skill Gap Analysis to improve future matches.</p>
+        {% else %}
+            <div class="d-flex justify-content-between text-center small">
+                <div class="{% if application.status_step_index >= 0 %}text-primary fw-bold{% else %}text-muted{% endif %}">Applied</div>
+                <div class="{% if application.status_step_index >= 1 %}text-primary fw-bold{% else %}text-muted{% endif %}">Under Review</div>
+                <div class="{% if application.status_step_index >= 2 %}text-primary fw-bold{% else %}text-muted{% endif %}">Shortlisted</div>
+                <div class="{% if application.status_step_index >= 3 %}text-primary fw-bold{% else %}text-muted{% endif %}">Interview</div>
+                <div class="{% if application.status_step_index >= 4 %}text-primary fw-bold{% else %}text-muted{% endif %}">Selected</div>
+            </div>
+            <div class="progress mt-2" style="height: 6px;">
+                <div class="progress-bar bg-primary" style="width: {% widthratio application.status_step_index 4 100 %}%;"></div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% with interview=application.interview %}
+    {% if interview %}
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-bold mb-2"><i class="fa-solid fa-calendar-check text-primary"></i> Interview Scheduled</h6>
+        <p class="mb-1"><strong>Date &amp; Time:</strong> {{ interview.scheduled_datetime|date:"d M Y, h:i A" }}</p>
+        <p class="mb-1"><strong>Mode:</strong> {{ interview.get_mode_display }}</p>
+        {% if interview.meeting_link %}<p class="mb-1"><strong>Meeting Link:</strong> <a href="{{ interview.meeting_link }}" target="_blank">{{ interview.meeting_link }}</a></p>{% endif %}
+        {% if interview.location %}<p class="mb-1"><strong>Location:</strong> {{ interview.location }}</p>{% endif %}
+        {% if interview.notes %}<p class="mb-0"><strong>Notes:</strong> {{ interview.notes|linebreaks }}</p>{% endif %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% if application.cover_note %}
+    <div class="card shadow-sm border-0 p-4">
+        <h6 class="fw-bold mb-2">Your Cover Note</h6>
+        <p class="mb-0">{{ application.cover_note|linebreaks }}</p>
+    </div>
+    {% endif %}
+
+    <a href="{% url 'applications:my_applications' %}" class="btn btn-outline-secondary mt-3">Back to My Applications</a>
+</div>
+{% endblock %}

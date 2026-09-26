@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}Platform Dashboard | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0"><i class="fa-solid fa-gauge-high text-primary"></i> Platform Dashboard</h3>
+        <a href="/admin/" class="btn btn-outline-secondary btn-sm">Django Admin (record management)</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-users text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ total_users }}</h4>
+                <p class="text-muted small mb-0">Total Users</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-user-tie text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ candidates_count }}</h4>
+                <p class="text-muted small mb-0">Candidates</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-briefcase text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ recruiters_count }}</h4>
+                <p class="text-muted small mb-0">Recruiters</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-user-check text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ active_users_count }}</h4>
+                <p class="text-muted small mb-0">Active Users</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-building text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ companies_count }}</h4>
+                <p class="text-muted small mb-0">Companies</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-list-check text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ jobs_count }}</h4>
+                <p class="text-muted small mb-0">Total Jobs</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-door-open text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ open_jobs_count }}</h4>
+                <p class="text-muted small mb-0">Open Jobs</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-file-lines text-primary fa-2x mb-2"></i>
+                <h4 class="mb-0">{{ applications_count }}</h4>
+                <p class="text-muted small mb-0">Applications</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3">Applications by Status</h6>
+                {% if has_applications %}
+                    <canvas id="appStatusChart" height="220"></canvas>
+                {% else %}
+                    <p class="text-muted small mb-0">No applications yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3">Jobs by Status</h6>
+                {% if jobs_count %}
+                    <canvas id="jobStatusChart" height="220"></canvas>
+                {% else %}
+                    <p class="text-muted small mb-0">No jobs posted yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3">Recent Signups</h6>
+                {% for u in recent_users %}
+                    <div class="d-flex justify-content-between border-bottom py-2 small">
+                        <span>{{ u.username }}</span>
+                        <span class="badge bg-light text-dark border">{{ u.get_role_display|default:"Admin" }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small mb-0">No users yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3">Recent Jobs</h6>
+                {% for job in recent_jobs %}
+                    <div class="d-flex justify-content-between border-bottom py-2 small">
+                        <span>{{ job.title|truncatechars:25 }}</span>
+                        <span class="badge {% if job.status == 'open' %}bg-success{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small mb-0">No jobs yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3">Recent Applications</h6>
+                {% for app in recent_applications %}
+                    <div class="d-flex justify-content-between border-bottom py-2 small">
+                        <span>{{ app.candidate.user.username|truncatechars:20 }}</span>
+                        <span class="badge bg-light text-dark border">{{ app.get_status_display }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small mb-0">No applications yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% if has_applications %}
+<script>
+    new Chart(document.getElementById('appStatusChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ status_labels|safe }},
+            datasets: [{ label: 'Applications', data: {{ status_values|safe }}, backgroundColor: '#0d6efd' }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+    });
+</script>
+{% endif %}
+{% if jobs_count %}
+<script>
+    new Chart(document.getElementById('jobStatusChart'), {
+        type: 'pie',
+        data: {
+            labels: {{ job_status_labels|safe }},
+            datasets: [{ data: {{ job_status_values|safe }}, backgroundColor: ['#198754', '#6c757d'] }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+</script>
+{% endif %}
+{% endblock %}

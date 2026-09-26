@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ job.title }} | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">{{ job.title }}</h3>
+        <a href="{% url 'jobs:job_edit' job.pk %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
+    </div>
+    <p class="text-muted">{{ job.company.name }} &middot; {{ job.location }} &middot; {{ job.get_job_type_display }} &middot; {{ job.get_work_mode_display }}</p>
+
+    {% if job.status == 'open' %}<span class="badge bg-success mb-3">Open</span>
+    {% elif job.status == 'closed' %}<span class="badge bg-secondary mb-3">Closed</span>
+    {% else %}<span class="badge bg-warning text-dark mb-3">Draft</span>{% endif %}
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-bold">Description</h6>
+        <p>{{ job.description|linebreaks }}</p>
+        {% if job.responsibilities %}
+            <h6 class="fw-bold">Responsibilities</h6>
+            <p>{{ job.responsibilities|linebreaks }}</p>
+        {% endif %}
+
+        <div class="row small text-muted mt-2">
+            <div class="col-md-4">Experience: {{ job.min_experience }}{% if job.max_experience %} - {{ job.max_experience }}{% endif %} years</div>
+            <div class="col-md-4">Salary: {% if job.min_salary %}{{ job.min_salary }} - {{ job.max_salary|default:"?" }}{% else %}Not disclosed{% endif %}</div>
+            <div class="col-md-4">Deadline: {{ job.application_deadline|default:"Not set" }}</div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-bold mb-2">Required Skills</h6>
+        {% for js in job.mandatory_skills %}
+            <span class="badge bg-primary me-1 mb-1">{{ js.skill.name }}</span>
+        {% empty %}
+            <p class="text-muted small">None specified.</p>
+        {% endfor %}
+
+        <h6 class="fw-bold mt-3 mb-2">Preferred Skills</h6>
+        {% for js in job.preferred_skills %}
+            <span class="badge bg-light text-dark border me-1 mb-1">{{ js.skill.name }}</span>
+        {% empty %}
+            <p class="text-muted small">None specified.</p>
+        {% endfor %}
+    </div>
+
+    <div class="card shadow-sm border-0 p-4">
+        <h6 class="fw-bold mb-2">Applicants ({{ job.applicant_count }})</h6>
+        <a href="{% url 'applications:job_applicants' job.pk %}" class="btn btn-outline-primary btn-sm">View Applicants</a>
+    </div>
+</div>
+{% endblock %}

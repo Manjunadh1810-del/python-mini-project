@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{{ job.title }} | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-1">{{ job.title }}</h3>
+    <p class="text-muted">{{ job.company.name }} &middot; {{ job.location|default:"Location flexible" }} &middot; {{ job.get_job_type_display }} &middot; {{ job.get_work_mode_display }}</p>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-bold">Description</h6>
+        <p>{{ job.description|linebreaks }}</p>
+        {% if job.responsibilities %}
+            <h6 class="fw-bold">Responsibilities</h6>
+            <p>{{ job.responsibilities|linebreaks }}</p>
+        {% endif %}
+        <div class="row small text-muted mt-2">
+            <div class="col-md-4">Experience: {{ job.min_experience }}{% if job.max_experience %} - {{ job.max_experience }}{% endif %} years</div>
+            <div class="col-md-4">Salary: {% if job.min_salary %}{{ job.min_salary }} - {{ job.max_salary|default:"?" }}{% else %}Not disclosed{% endif %}</div>
+            <div class="col-md-4">Deadline: {{ job.application_deadline|default:"Open until filled" }}</div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h6 class="fw-bold mb-2">Required Skills</h6>
+        {% for js in job.mandatory_skills %}
+            <span class="badge bg-primary me-1 mb-1">{{ js.skill.name }}</span>
+        {% empty %}
+            <p class="text-muted small">None specified.</p>
+        {% endfor %}
+
+        {% if job.preferred_skills %}
+            <h6 class="fw-bold mt-3 mb-2">Preferred Skills</h6>
+            {% for js in job.preferred_skills %}
+                <span class="badge bg-light text-dark border me-1 mb-1">{{ js.skill.name }}</span>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% if match %}
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0"><i class="fa-solid fa-bullseye text-primary"></i> Your Match Score</h6>
+            <span class="fs-4 fw-bold {% if match.match_score >= 70 %}text-success{% elif match.match_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ match.match_score }}%</span>
+        </div>
+        <p class="text-muted small mt-2 mb-2">{{ match.recommendation }}</p>
+        <a href="{% url 'candidates:skill_gap' job.pk %}" class="small">View Full Skill Gap Analysis</a>
+    </div>
+    {% endif %}
+
+    {% if request.user.is_authenticated and request.user.role == 'candidate' %}
+        <a href="{% url 'applications:job_apply' job.pk %}" class="btn btn-primary">Apply Now</a>
+    {% elif not request.user.is_authenticated %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-outline-primary">Login as Candidate to Apply</a>
+    {% endif %}
+</div>
+{% endblock %}

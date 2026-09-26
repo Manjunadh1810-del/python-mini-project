@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}Candidate Dashboard | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4">Welcome, {{ request.user.first_name|default:request.user.username }} 👋</h3>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-id-card fa-2x text-primary mb-2"></i>
+                <h5>{{ completion }}%</h5>
+                <p class="text-muted small mb-2">Profile Completion</p>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-primary" style="width: {{ completion }}%;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-file-lines fa-2x text-primary mb-2"></i>
+                <h5>{{ total_applications }}</h5>
+                <p class="text-muted small mb-0">Total Applications</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-magnifying-glass fa-2x text-primary mb-2"></i>
+                <h5>{{ under_review_count }}</h5>
+                <p class="text-muted small mb-0">Under Review</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center p-3">
+                <i class="fa-solid fa-star fa-2x text-primary mb-2"></i>
+                <h5>{{ shortlisted_count }}</h5>
+                <p class="text-muted small mb-0">Shortlisted</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h5 class="mb-3">Applications by Status</h5>
+                {% if has_applications %}
+                    <canvas id="statusChart" height="220"></canvas>
+                {% else %}
+                    <p class="text-muted small mb-0">No applications yet.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h5 class="mb-3">Recent Applications</h5>
+                {% for app in recent_applications %}
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span>{{ app.job.title }} - {{ app.job.company.name }}</span>
+                        <span class="badge bg-secondary">{{ app.get_status_display }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-muted small mb-0">No applications yet. <a href="{% url 'jobs:job_list_public' %}">Browse jobs</a> to get started.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if top_recommended_jobs %}
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0"><i class="fa-solid fa-bullseye text-primary"></i> Top Recommended Jobs</h5>
+            <a href="{% url 'candidates:job_recommendations' %}" class="small">View All</a>
+        </div>
+        {% for job, match in top_recommended_jobs %}
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                <div>
+                    <a href="{% url 'jobs:job_detail_public' job.pk %}" class="text-decoration-none">{{ job.title }}</a>
+                    <span class="text-muted small"> - {{ job.company.name }}</span>
+                </div>
+                <span class="fw-bold {% if match.match_score >= 70 %}text-success{% elif match.match_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ match.match_score }}%</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if top_missing_skills %}
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h5 class="mb-1"><i class="fa-solid fa-chart-line text-primary"></i> Skill Gap Summary</h5>
+        <p class="text-muted small mb-3">Skills most frequently missing across open jobs you could apply to:</p>
+        {% for skill, count in top_missing_skills %}
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                <span>{{ skill }}</span>
+                <span class="badge bg-warning text-dark">Missing in {{ count }} job{{ count|pluralize }}</span>
+            </div>
+        {% endfor %}
+        <p class="text-muted small mt-3 mb-0">Visit a job's Skill Gap page for suggested learning topics.</p>
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <h5 class="mb-2">Resume Status</h5>
+        {% if resume %}
+            {% if resume.extraction_successful %}
+                <p class="text-success mb-1"><i class="fa-solid fa-circle-check"></i> Resume uploaded and analyzed ({{ resume.filename }})</p>
+            {% else %}
+                <p class="text-warning mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Resume uploaded but text extraction failed</p>
+            {% endif %}
+            <a href="{% url 'resumes:resume_view' %}" class="btn btn-outline-primary btn-sm">View Resume</a>
+            {% if resume.is_analyzed %}
+                <a href="{% url 'resumes:resume_analysis' %}" class="btn btn-outline-primary btn-sm">View AI Analysis</a>
+            {% endif %}
+        {% else %}
+            <p class="text-muted mb-2">No resume uploaded yet. Upload one to unlock AI matching.</p>
+            <a href="{% url 'resumes:resume_upload' %}" class="btn btn-primary btn-sm">Upload Resume</a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm border-0 p-4">
+        <h5 class="mb-3">Quick Actions</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'candidates:profile_view' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-user"></i> View Profile</a>
+            <a href="{% url 'candidates:profile_edit' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-pen"></i> Edit Profile</a>
+            <a href="{% url 'candidates:education_add' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-graduation-cap"></i> Add Education</a>
+            <a href="{% url 'candidates:experience_add' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-briefcase"></i> Add Experience</a>
+            <a href="{% url 'candidates:skills_manage' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-star"></i> Manage Skills</a>
+            <a href="{% url 'candidates:job_recommendations' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-bullseye"></i> Recommended Jobs</a>
+            <a href="{% url 'jobs:job_list_public' %}" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-briefcase"></i> Browse Jobs</a>
+        </div>
+    </div>
+
+    {% if completion < 100 %}
+    <div class="alert alert-warning mt-4">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Your profile is only {{ completion }}% complete. A fuller profile improves your job match accuracy.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if has_applications %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ status_labels|safe }},
+            datasets: [{
+                data: {{ status_values|safe }},
+                backgroundColor: ['#6c757d', '#0d6efd', '#198754', '#0dcaf0', '#20c997', '#dc3545'],
+            }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+</script>
+{% endif %}
+{% endblock %}

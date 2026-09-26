@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Delete Company | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h4 class="fw-bold text-danger mb-3"><i class="fa-solid fa-triangle-exclamation"></i> Delete Company</h4>
+                <p>Are you sure you want to delete <strong>{{ company.name }}</strong>?</p>
+                <p class="text-muted small">This cannot be undone. Any jobs posted under this company will also be affected. You'll be able to create a new company profile immediately after.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Delete Company</button>
+                    <a href="{% url 'recruiters:company_detail' %}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

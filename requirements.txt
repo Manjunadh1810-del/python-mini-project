@@ -1,0 +1,16 @@
+Django==5.0.6
+djangorestframework==3.15.1
+djangorestframework-simplejwt==5.3.1
+python-decouple==3.8
+psycopg2-binary==2.9.9
+pillow==10.3.0
+django-cors-headers==4.3.1
+whitenoise==6.7.0
+dj-database-url==2.2.0
+gunicorn==22.0.0
+pypdf==4.2.0
+python-docx==1.1.2
+scikit-learn==1.4.2
+nltk==3.8.1
+reportlab==4.2.0  # test-only: used to generate sample PDFs in resumes/tests.py
+coverage==7.6.1  # test-only: run 'coverage run manage.py test' + 'coverage report' for a coverage summary

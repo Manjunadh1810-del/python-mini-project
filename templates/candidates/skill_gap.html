@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Skill Gap - {{ job.title }} | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-1"><i class="fa-solid fa-chart-line text-primary"></i> Skill Gap Analysis</h3>
+    <p class="text-muted mb-4">{{ job.title }} at {{ job.company.name }}</p>
+
+    <div class="card shadow-sm border-0 p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0">Overall Match</h6>
+            <span class="fs-3 fw-bold {% if report.match_score >= 70 %}text-success{% elif report.match_score >= 40 %}text-warning{% else %}text-danger{% endif %}">{{ report.match_score }}%</span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3 text-success"><i class="fa-solid fa-circle-check"></i> Matched Skills</h6>
+                {% for skill in report.matched_skills %}
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success me-1 mb-2 p-2">{{ skill }}</span>
+                {% empty %}
+                    <p class="text-muted small mb-0">No matched skills yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4 h-100">
+                <h6 class="fw-bold mb-3 text-danger"><i class="fa-solid fa-circle-xmark"></i> Missing Skills</h6>
+                {% for skill in report.missing_skills %}
+                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger me-1 mb-2 p-2">{{ skill }}</span>
+                {% empty %}
+                    <p class="text-success small mb-0"><i class="fa-solid fa-circle-check"></i> No missing required skills. You're a strong fit!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% if report.learning_plan %}
+    <div class="card shadow-sm border-0 p-4">
+        <h6 class="fw-bold mb-3"><i class="fa-solid fa-graduation-cap text-primary"></i> Suggested Learning Areas</h6>
+        {% for item in report.learning_plan %}
+            <div class="border-bottom pb-3 mb-3">
+                <p class="fw-bold mb-1">{{ item.skill }}</p>
+                <div>
+                    {% for topic in item.topics %}
+                        <span class="badge bg-light text-dark border me-1 mb-1">{{ topic }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+        <p class="text-muted small mb-0">These are suggested topics to explore - search for courses on these on your preferred learning platform.</p>
+    </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <a href="{% url 'jobs:job_detail_public' job.pk %}" class="btn btn-outline-secondary">Back to Job</a>
+        <a href="{% url 'candidates:job_recommendations' %}" class="btn btn-outline-primary">View Recommended Jobs</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Schedule Interview | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h4 class="fw-bold mb-1">{% if existing_interview %}Reschedule{% else %}Schedule{% endif %} Interview</h4>
+                <p class="text-muted mb-4">{{ application.candidate.user.first_name|default:application.candidate.user.username }} - {{ application.job.title }}</p>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Date</label>
+                            {{ form.scheduled_date }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Time</label>
+                            {{ form.scheduled_time }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mode</label>
+                        {{ form.mode }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Meeting Link (for online)</label>
+                        {{ form.meeting_link }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location (for in-person)</label>
+                        {{ form.location }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notes for Candidate</label>
+                        {{ form.notes }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save &amp; Notify Candidate</button>
+                    <a href="{% url 'applications:applicant_detail' application.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

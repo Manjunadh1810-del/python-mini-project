@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Browse Jobs | SmartRecruit AI{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4">Browse Jobs</h3>
+
+    <form method="get" class="card shadow-sm border-0 p-3 mb-4">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small">Search</label>
+                {{ form.q }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Location</label>
+                {{ form.location }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Job Type</label>
+                {{ form.job_type }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Work Mode</label>
+                {{ form.work_mode }}
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </div>
+    </form>
+
+    {% if jobs %}
+        <div class="row g-3">
+            {% for job in jobs %}
+            <div class="col-md-6">
+                <div class="card shadow-sm border-0 p-3 h-100">
+                    <h5><a href="{% url 'jobs:job_detail_public' job.pk %}" class="text-decoration-none">{{ job.title }}</a></h5>
+                    <p class="text-muted small mb-1">{{ job.company.name }} &middot; {{ job.location|default:"Location flexible" }}</p>
+                    <div class="mb-2">
+                        <span class="badge bg-light text-dark border">{{ job.get_job_type_display }}</span>
+                        <span class="badge bg-light text-dark border">{{ job.get_work_mode_display }}</span>
+                    </div>
+                    <p class="small text-muted mb-0">{{ job.min_experience }}{% if job.max_experience %}-{{ job.max_experience }}{% endif %} yrs experience</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card shadow-sm border-0 p-4 text-center">
+            <i class="fa-solid fa-briefcase fa-3x text-secondary mb-3"></i>
+            <h5>No jobs found</h5>
+            <p class="text-muted">Try adjusting your search filters.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
